@@ -5,7 +5,7 @@
 This project is currently hosted at 
 https://www.youtube.com/user/SeetheTruth4Yourself
 
-The goal is to build a Spelunker clone that emulates the original clone. There is no deadline set for this project. We meet on YouTube via Google Hangouts usually each Friday.
+The goal is to build a Spelunker clone that emulates the original clone. There is no deadline set for this project. We meet on YouTube via Google Hangouts usually each Friday evening.
 
 
 Currently it contains:
