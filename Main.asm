@@ -370,15 +370,15 @@ Screen_Setup
         ;SPRITE_POS_X + 2 - joystick background shape
 
         lda #100                        ; Store X/Y coords of Sprite 1 at 100,200
-        sta VIC_SPRITE_X_POS + 2        ; Add 2 to arrive at $D002 - Sprite 1 X - $D002
-        sta VIC_SPRITE_X_POS + 4
+        sta VIC_SPRITE_X_POS         ; Add 2 to arrive at $D002 - Sprite 1 X - $D002
+        ;sta VIC_SPRITE_X_POS + 4
         ;sta SPRITE_POS_X + 1            ; Store in our X pos variable
         ;sta SPRITE_POS_X + 2
         ;sta VIC_SPRITE_X_POS + 4
 
         lda #170
-        sta VIC_SPRITE_Y_POS + 2        ; Store 200 in the Y variable and the VIC
-        sta VIC_SPRITE_Y_POS + 4
+        sta VIC_SPRITE_Y_POS         ; Store 200 in the Y variable and the VIC
+        ;sta VIC_SPRITE_Y_POS + 4
         ;sta SPRITE_POS_Y + 1
         ;sta SPRITE_POS_Y + 2
         ;sta VIC_SPRITE_Y_POS + 4
@@ -390,13 +390,13 @@ Screen_Setup
         lda #COLOR_CYAN                 ; Set sprite 1 to cyan
         sta VIC_SPRITE_COLOR + 1        ; Sprite color registers run concurrently 0-8
 
-        lda #SPRITE_BASE + 28           ; Take our first sprite image (Kilbot)
+        lda #SPRITE_BASE            ; Take our first sprite image (Kilbot)
         sta SPRITE_0_PTR                ; store it in the pointer for sprite 0
 
 ;        lda #SPRITE_BASE + 32           ; Take sprite image 5 (Running killbot)
 ;        sta SPRITE_1_PTR
-        lda #SPRITE_BASE + 32
-        sta SPRITE_2_PTR
+        ;lda #SPRITE_BASE + 32
+        ;sta SPRITE_2_PTR
 
         lda #$00
         sta SPRITE_DIRECTION + 1        ; start running dude moving right
@@ -699,83 +699,37 @@ AnimTest2
         lda SPRITE_DIRECTION        ; see if we're standing still - equal would be 0
         bmi @movingLeft
 
-;        bne @left_right               ; if we're moving - test for left/right direction
-        
-;Idle animation
-;        clc
-;        lda ANIM_FRAME,x              ; Standing still - we use frames 0 to 3
-;        cmp #32                       ; if we hit 4 we need to reset to start
-;        bcc @updateAnim
-;        lda #28                        ; reset to start (frame 0)
-;        sta ANIM_FRAME,x              ; store if in proper place for this sprite
-;        jmp @updateAnim
-
-;Was commented out earlier
-;@left_right
-                                      ; if we go from standing to moving, the frame will be
-                                      ; very low and will just increment until it hits a max frame
-                                      ; for the other cases - which would be very ugly
-;        clc
-;        lda ANIM_FRAME,x              ; if the animframe is 12 or more, we were probably already
-;        cmp #13                       ; moving - so we can just continue with our direction checks
-;        beq @left_check
-;        lda #20                       ; if not we set it to a value that both cases will correct
-;        sta ANIM_FRAME,x              ; automatically - setting it to the correct start frame
-
-;@left_check
-;@updateAnimation
-;        lda SPRITE_DIRECTION,x        ; if direction is -1 we are moving left
-;        bmi @movingLeft
-
-;Moving right        
+;Moving right   
         clc                         ; Sprite moving right - use frames 3-7
         lda ANIM_FRAME
-        sta $d020
-        cmp #0                                   
+        cmp #6                                   
         bcc @updateAnim
-        lda #7                      ; reset back to start frame
+        lda #0                      ; reset back to start frame
         sta ANIM_FRAME
         jmp @updateAnim
 
-@movingLeft
-                                    ; Sprite moving left - use frames 9-12
-        lda ANIM_FRAME            
-        cmp #19                     ; Check to make sure the anim frame isn't = 20
-        bne @updateAnim             ; Flip frame animation
-        lda #14
-        sta ANIM_FRAME
-        jmp @updateAnim
         
-
-;@movingLeft
-;                                    ; Sprite moving left - use frames 9-12
-;        lda ANIM_FRAME,x            
-;        cmp #19                     ; Check to make sure the anim frame isn't = 20
-;        bcs @resetLeft              ; Reset to the start frame if it's overrun
-
-;        clc                         ; a special case when you go from right to left
-;        cmp #13                     ; the anim frame will be between 12 - 15
-;        bcc @resetLeft              ; left alone it will increment up to 16
-;                                    ; which leaves an ugly result
-;        jmp @updateAnim
+@movingLeft
+        inc ANIM_LEFT
+                                    ; Sprite moving left - use frames 9-12
+        lda ANIM_LEFT            
+        cmp #19                     ; Check to make sure the anim frame isn't = 20
+        bcs @resetLeft              ; Reset to the start frame if it's overrun
+        jmp @updateAnim
 ;                
 
-;@resetLeft
-;        lda #13                     ; reset to frame start if it overruns
-;        sta ANIM_FRAME,x
-;        jmp @updateAnim
+@resetLeft
+        lda #14                     ; reset to frame start if it overruns
+        sta ANIM_LEFT
+        jmp @updateAnim
                                     ; Update the displayed frame
 @updateAnim
 
         clc
         adc #SPRITE_BASE           ; pointer = SPRITE_BASE + FRAME #
-        sta SPRITE_0_PTR,x         ; store new image pointer the correct sprite pointer
-        sta SPRITE_2_PTR,x         ; blue sprite
-                                   ; (which would be SPRITE_0_PTR + x)
-
-        lda #%00000000
-        sta VIC_CONTROL + 1
+        sta SPRITE_0_PTR         ; store new image pointer the correct sprite pointer1
         rts
+
 
 Runningman
         ;------------------------------------------------------------------
@@ -913,6 +867,8 @@ SPRITE_DIRECTION
         byte $00,$00,$00,$00,$00,$00,$00,$00    ; Direction of the sprite (-1 0 1)
 ANIM_FRAME
         byte $00,$00,$00,$00,$00,$00,$00,$00    ; Current animation frame
+
+ANIM_LEFT byte $E
 ;---------------------------------------------------------------------------------------------------
 ; Bit Table
 ; Take a value from 0 to 7 and return it's bit value
