@@ -1,6 +1,6 @@
 # Machine_Language_Project
 
-[![MachineLanguageProject](https://github.com/smorrow8859/Machine_Language_Project/SpelunkerWeek6.png)](#features)
+[![MachineLanguageProject2](https://github.com/smorrow8859/Machine_Language_Project/SpelunkerWeek6.png)](#features)
 
 This project is currently hosted at 
 https://www.youtube.com/user/SeetheTruth4Yourself
