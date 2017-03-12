@@ -5,8 +5,8 @@
 This project is currently hosted at 
 https://www.youtube.com/user/SeetheTruth4Yourself
 
-The goal is to build a Spelunker clone that emulates the original clone (see image below). There is no deadline set for this project. We meet on YouTube via Google Hangouts usually each Friday.
-[![MachineLanguageProject](https://github.com/smorrow8859/Machine_Language_Project/blob/master/Spelunker1983C64.PNG)](#features)
+The goal is to build a Spelunker clone that emulates the original clone. There is no deadline set for this project. We meet on YouTube via Google Hangouts usually each Friday.
+
 
 Currently it contains:
 Background to sprite collision detection
