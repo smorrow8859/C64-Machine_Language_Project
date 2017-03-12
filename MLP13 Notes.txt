@@ -1,0 +1,30 @@
+Commodore 64 Machine Language Project Week 6
+
+
+SPRITE_POS_Y - Spelunker
+SPRITE_POS_X
+
+
+VIC_SPRITE_X_POS
+VIC_SPRITE_Y_POS,
+
+
+MoveSpriteLeft
+
+(Killbot)
+Right 13-16
+      (12-15)
+
+Left 17-20
+     (16-19)
+
+
+15,21
+
+SPRITE_DIRECTION:
+= -1 = left
+
+        ;Running animation sprite
+        ;SPRITE_POS_X + 0 - joystick sprite
+        ;SPRITE_POS_X + 1 - animation sprite
+        ;SPRITE_POS_X + 2 - joystick background shape

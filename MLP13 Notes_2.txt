@@ -1,0 +1,19 @@
+ANIM_FRAME
+        byte $00,$00,$00,$00,$00,$00,$00,$00    ; Current animation frame
+
+      frames $01,$02,$03,$04,$05,$06,$07,$08
+
+
+Animation Frames for all 8 sprites
+
+        lda #$00
+        sta ANIM_FRAME + 1              ; starting sprite image for runner (4)
+
+
+
+;This variable handles the joystick values
+SPRITE_DIRECTION                                                
+        byte $00,$00,$00,$00,$00,$00,$00,$00    ; Direction of the sprite (-1 0 1)
+
+
+Sprite direction to move

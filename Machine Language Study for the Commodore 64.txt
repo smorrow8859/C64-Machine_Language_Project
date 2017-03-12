@@ -1,0 +1,76 @@
+Machine Language Study Part 1
+
+www.c64-wiki.com
+www.dustlayer.com/vic-ii/2013/4/28/vic-ii-for-beginners-parts-5-bringing-sprites-in-shape
+www.codebase64.com
+
+Memory addresses can store from 0 to 65536 possible values.
+
+RAM - this is the area when Basic and machine language programs can reside. You can overwrite this area.
+ROM - this is where the fixed routines are stored. You cannot overwrite this area.
+
+
+IA - Input/Output - these can contain functions such as timing, interrupt control systems, video or sound.
+
+Address - can be split into two parts. One part contains the high part of the address. The other part is the low part of the address. An example we can look at is memory location $d020. The $D0 selects the video chip, while the $20 sets the border color of the screen. 
+
+Registers - these are storage areas that can occupy values. They are not considered "memory" however since they are not linked to any specific address.
+
+Addresses contain:
+PC - the program counter. This tells us where the instructions will come from.
+A,X, and Y - registers that hold data
+SR - the status register. This tells about the results of recent tests, data handling, etc.
+SP - the stack pointer. This keeps track of a temporary storage area.
+
+Since the 650x doesn't have a way of moving memory around from one address to another, it utilizies the A,X, and Y registers. 
+
+Defined:
+A - accumulator
+X - x register
+Y - y register
+
+Machine language monitor -allows us to write commands that only the computer can understand at a lower level.
+
+kernal - the operating system that makes screen, keyboard, input/ouput, and control mechanisms work together.
+
+
+
+Examples:
+$ffd2		CHROUT		Outputs an ASCII character
+$ffe4		GETIN		Gets an ASCII character
+$ffe1		STOP		Checks the RUN/STOP key
+
+How an assembler works. 
+
+The computer will translate the mnemonics of your program, assemble the source code into information that the computer can understand, and convert the output into object code that appears in memory.
+
+Computer interrupts
+
+While a machine language program is running, the computer freezes 60 times a second. This is known as interrupt processing. It stops what is was doing and switches to a new set of programs to perform various tasks such as flashing the cursor, checking the keyboard, keeping the clock in sync, checking the disk drive, cassette motor, etc. When its done, it "unfreezes" the main program to allow continuation again where it left off at. 
+
+An interrupt could take place between any actual instructions, such as LDX, CPX, etc. It is also possible the undreds of interrupt instructions could be executed between each. 
+
+This is accomplished by the work of a flag. The flag is the part of the processor that records an event when it occurs. The status information are known as flags. These flags consist of Z,C,N, and V.
+
+------------------------------------------------------------------------------------------------------------
+Z (Zero flag) - it is set to "on" if the compared values are equal, otherwise it is off. Sometime though, the Z flag checks for a value equal to zero. Any LDA command affects the Z flag. INC, DEC, ADC, SBC also affect this.
+
+
+Registers such as STA, STX, STY never change the flag. Branch instructions test flags, but don't alter them.
+
+An example of observatoin
+
+lda #$23	;Resets the Z flag since 23 is not equal to zero 
+
+	
+ldx #$00	;Sets the Z flag because of the #$00 
+sta $1234	;does not change the Z flag.	
+beq $...	;Z flag is set and the branch executes
+
+C flag (carry) - It is set to "on" if the register (X, Y, or A) is greater than or equal to the value compared. If the value is smaller, the C flag flips to "off". Instructions such as CPX, CPY or CMP affect this flag. It is also affected by ADC, SBC, ASL, LSR, LSR, and ROL.
+
+If the C flag is "on" BCS will execute to the defined address. Otherwise it is ignored. It it is "off" the BCC instruction will execute.
+
+The C flag can be set or reset by using SEC(set carry) or CLC(clear carry).
+
+N flag (negative) - it indicates that a register has been given a value where the high bit is set. It changes with every instruction that affects a register. It is also affected by comparisions. Also if the N flag is set "on", the BMI (branch minus) instruction will branch to an address, otherwise it is ignored. It it is "off" the BPL (branch plus) instruction will execute. 
