@@ -343,6 +343,12 @@ DisplayText
 ; A = byte to display
 ; MODIFIES : ZEROPAGE_POINTER_1, ZEROPAGE_POINTER_3, PARAM4
 ;---------------------------------------------------------------------------------------------------
+; Ken Jennings -- modified this to use a lookup table for the Nybble to screen text conversion.
+; This also changes the function to write in left to right order, so callers may need to 
+; adjust their X coordinate.
+; (Also, this change is added to give Steve a reason to work with branches and pull requests)   :-)
+;---------------------------------------------------------------------------------------------------
+
 #region "DisplayByte"
 DisplayByte
 
@@ -358,43 +364,35 @@ DisplayByte
         sta ZEROPAGE_POINTER_3 + 1                      ; for the color address high byte
 
         lda PARAM4                                      ; load the byte to be displayed
-        and #$0F                                        ; mask for the lower half (0-F)
-        adc #$30                                        ; add $30 (48) to display character set
-                                                        ; numbers
-
-        clc                                             ; clear carry flag
-        cmp #$3A                                        ; less than the code for A (10)?
-        bcc @writeDigit                                  ; Go to the next digit
         
-        sbc #$39                                        ; if so we set the character code back to
-                                                        ; display A-F ($01 - $0A)
-
-@writeDigit                                              
-        iny                                             ; increment the position on the line                                       
-        sta (ZEROPAGE_POINTER_1),y                      ; write the character code
+        lsr  ;; divide by 16 to shift hi nybble into low nybble ( value of 0-F)
+	lsr
+	lsr
+	lsr
+	tax 
+	lda NYBBLE_TO_HEX,x  ;; simplify. no math.  just lookup table.
+        
+	sta (ZEROPAGE_POINTER_1),y                      ; write the character code
         lda #COLOR_WHITE                                ; set the color to white
         sta (ZEROPAGE_POINTER_3),y                      ; write the color to color ram
 
-        dey                                             ; decrement the position on the line
+	iny ;; writes left to right.
+
         lda PARAM4                                      ; fetch the byte to DisplayText
-        and #$F0                                        ; mask for the top 4 bits (00 - F0)
-        lsr                                             ; shift it right to a value of 0-F
-        lsr
-        lsr
-        lsr
-        adc #$30                                        ; from here, it's the same
+                                      
+	and #$0F ;; low nybble is second character
+        tax
+	lda NYBBLE_TO_HEX,x  ;; simplify. no math.  just lookup table.
         
-        clc
-        cmp #$3A                                        ; check for A-F
-        bcc @lastDigit
-        sbc #$39
-
-@lastDigit
         sta (ZEROPAGE_POINTER_1),y                      ; write character and color
-        lda #COLOR_WHITE
-        sta (ZEROPAGE_POINTER_3),y
-
+        lda #COLOR_WHITE                                ; set the color to white
+        sta (ZEROPAGE_POINTER_3),y                      ; write the color to color ram
+       
         rts
+
+NYBBLE_TO_HEX ;; Values in Atari format
+	byte '0123456789ABCDEF'  ; C64 PETSCII
+;;      .sbyte "0123456789ABCDEF" ; Atari internal format.
 
 #endregion
 ;---------------------------------------------------------------------------------------------------
