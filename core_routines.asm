@@ -88,41 +88,63 @@ ClearScreen
 
 ReadJoystick
 
-        lda #$00                        ; Reset JOY X and Y variables
+;;        lda #$00                        ; Reset JOY X and Y variables
+;;        sta JOY_X
+;;        sta JOY_Y
+
+;;        lda #$02                        ; Test for Down
+;;        bit JOY_2
+;;        bne @NotDown
+;;        lda #$01
+;;        sta JOY_Y
+;;        jmp @NotUp                      ; Can't be up AND down
+;;@NotDown
+;;        lda #$01                        ; Test for Up
+;;        bit JOY_2
+;;        bne @NotUp
+;;        lda #-1
+;;        sta JOY_Y
+;;@NotUp                                  ; Test for Left
+;;        lda #$04
+;;        bit JOY_2
+;;        bne @NotLeft
+;;        lda #-1
+;;        sta JOY_X
+;;        rts                             ; Can't be left AND right - no more tests
+
+;;@NotLeft                                ; Test for Right
+;;        lda #$08
+;;        bit JOY_2
+;;        bne @NotRight
+;;        lda #$01
+;;        sta JOY_X
+;;        rts                             ; no more checks
+
+;;@NotRight                               ; Nothing pressed
+
+;; This was originally done with the Atari.  
+;; It should work the same on the C64.
+;; Much more simple than all the logic to test bits.
+;; Just lookup X and Y directions from a table.
+;; Worst case the lookup table values may need to change if
+;; the C64 direction bits are not the same as the Atari's.
+
+        lda JOY_2 ; read joystick register.
+        and #$0F  ; limit value to low nybble ($0 to $F)
+        tax
+        lda DIRECTION_X,x ; Read direction from table.
         sta JOY_X
-        sta JOY_Y
+        lda DIRECTION_Y,x ; Read direction from table.
+        STA JOY_Y
+        
+        rts
 
-        lda #$02                        ; Test for Down
-        bit JOY_2
-        bne @NotDown
-        lda #$01
-        sta JOY_Y
-        jmp @NotUp                      ; Can't be up AND down
-@NotDown
-        lda #$01                        ; Test for Up
-        bit JOY_2
-        bne @NotUp
-        lda #-1
-        sta JOY_Y
-@NotUp                                  ; Test for Left
-        lda #$04
-        bit JOY_2
-        bne @NotLeft
-        lda #-1
-        sta JOY_X
-        rts                             ; Can't be left AND right - no more tests
+DIRECTION_X 
+        byte 0,0,0,0,1,1,1,1,-1,-1,-1,-1,0,0,0,0
 
-@NotLeft                                ; Test for Right
-        lda #$08
-        bit JOY_2
-        bne @NotRight
-        lda #$01
-        sta JOY_X
-        rts                             ; no more checks
-
-@NotRight                               ; Nothing pressed
-         rts
-
+DIRECTION_Y 
+        byte 0,1,-1,0,0,1,-1,0,0,1,-1,0,0,1,-1,0
+        
 #endregion
 
 
